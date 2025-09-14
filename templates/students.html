@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Records</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Student Records</h1>
+    <input type="text" id="search" placeholder="🔍 Search by name..." onkeyup="searchStudents()">
+
+    <table id="studentsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td>{{ student.id }}</td>
+          <td>{{ student.name }}</td>
+          <td>{{ student.grade }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function searchStudents() {
+      const query = document.getElementById("search").value;
+      const response = await fetch(`/search_students?q=${query}`);
+      const data = await response.json();
+
+      const tableBody = document.querySelector("#studentsTable tbody");
+      tableBody.innerHTML = "";
+
+      if (data.length === 0) {
+        tableBody.innerHTML = "<tr><td colspan='3'>No results found</td></tr>";
+        return;
+      }
+
+      data.forEach(student => {
+        const row = `<tr>
+          <td>${student.id}</td>
+          <td>${student.name}</td>
+          <td>${student.grade}</td>
+        </tr>`;
+        tableBody.innerHTML += row;
+      });
+    }
+  </script>
+</body>
+</html>
